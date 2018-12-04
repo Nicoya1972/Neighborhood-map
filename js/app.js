@@ -126,13 +126,13 @@ var ViewModel = function() {
     };
 
     // Get Foursqaure data. Search by venue's geo-location.
-    var foursquareKeyString = 'client_id=LSYIDWAVCIGBEVWPCL0AYXNTW3ZH1GUD1X4YMSKJ0FOH12TF&client_secret= UJMMAZ4SZWAFZPV0OK54OUAM3THQWLTSDOHDJD1GU50R1SGG';
+    var foursquareKeyString = 'client_id=LSYIDWAVCIGBEVWPCL0AYXNTW3ZH1GUD1X4YMSKJ0FOH12TF&client_secret= SZLFIMOHG03T4TDIJWJSBQXGXS502GKSWKBUPWORWRCG3Z4R';
 
     function getFoursquareData(location) {
         // Request Foursqaure data
         var url = "https://api.foursquare.com/v2/venues/search?limit=1&ll=" + location.latIngA.toFixed(2) + "," +
             location.latIngB.toFixed(2) + "&query=" +
-            location.name + '&' + foursquareKeyString + "&v=" + getToday();
+            location.name + '&' + foursquareKeyString + "&v=20181120" + getToday();
         $.ajax({
             url: url,
             context: document.body
@@ -159,7 +159,7 @@ var ViewModel = function() {
         // Get venue's photo URL from Foursquare by venue Id.
         var photoRequestUrl = 'https://api.foursquare.com/v2/venues/' + venueId + '/photos' +
             '?limit=1&' + foursquareKeyString +
-            '&v=' + getToday();
+            '&v=20181120' + getToday();
         $.ajax({
             url: photoRequestUrl,
             context: document.body
@@ -195,19 +195,19 @@ var ViewModel = function() {
                 // If any one of the keywords match with any of one of the words in locations' names,
                 // save the matched location in the filteredLocations array.
                 if (locations[j].name.toLowerCase().indexOf(keywords[i]) != -1) {
-                    filteredlocations.push(locations[j]);
+                    filteredLocations.push(locations[j]);
                     break;
                 }
             }
         }
         // Render filtered locations
-        self.renderlocations(filteredlocations);
+        self.renderLocations(filteredLocations);
     };
 
 };
 
 
-var View = function() {
+var View = function initMap() {
       "use strict";
     var self = this;
     // Initialize Google Map
