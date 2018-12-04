@@ -195,13 +195,13 @@ var ViewModel = function() {
                 // If any one of the keywords match with any of one of the words in locations' names,
                 // save the matched location in the filteredLocations array.
                 if (locations[j].name.toLowerCase().indexOf(keywords[i]) != -1) {
-                    filteredlocations.push(locations[j]);
+                    filteredLocations.push(locations[j]);
                     break;
                 }
             }
         }
         // Render filtered locations
-        self.renderlocations(filteredlocations);
+        self.renderLocations(filteredLocations);
     };
 
 };
