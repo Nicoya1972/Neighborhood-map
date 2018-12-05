@@ -1,8 +1,5 @@
 # Neighborhood-map
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 
 # Resources For API activation
 https://stackoverflow.com/questions/35700182/apinotactivatedmaperror-for-simple-html-page-using-google-places-api
@@ -33,3 +30,10 @@ Knockout js How to form Website
 >>>>>>> origin/gh-pages
 =======
 >>>>>>> origin/gh-pages
+=======
+https://nicoya1972.github.io/Neighborhood-map/
+
+# Resources For API activation
+https://stackoverflow.com/questions/35700182/apinotactivatedmaperror-for-simple-html-page-using-google-places-api
+
+>>>>>>> master
