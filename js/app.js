@@ -207,7 +207,7 @@ var ViewModel = function() {
 };
 
 
-var View = function initMap() {
+var View = function () {
       "use strict";
     var self = this;
     // Initialize Google Map
