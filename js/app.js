@@ -206,7 +206,6 @@ var ViewModel = function() {
 
 };
 
-
 var View = function () {
       "use strict";
     var self = this;
