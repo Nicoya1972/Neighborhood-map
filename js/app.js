@@ -206,11 +206,7 @@ var ViewModel = function() {
 
 };
 
-var myLatlng
-var   maps
-    
-
-var View = function () {
+var View = function() {
       "use strict";
     var self = this;
     // Initialize Google Map
@@ -218,11 +214,10 @@ var View = function () {
     var mapOptions = {
         zoom: 17,
         center: myLatlng,
-        disableDefaultUI: true },
-        map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-    
+        disableDefaultUI: true
+    };
 
-    //var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
     // Create infowindow
     var infowindow = new google.maps.InfoWindow({
