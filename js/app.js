@@ -206,6 +206,10 @@ var ViewModel = function() {
 
 };
 
+var myLatlng
+var   maps
+    
+
 var View = function () {
       "use strict";
     var self = this;
@@ -214,10 +218,11 @@ var View = function () {
     var mapOptions = {
         zoom: 17,
         center: myLatlng,
-        disableDefaultUI: true
-    };
+        disableDefaultUI: true },
+        map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    
 
-    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    //var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
     // Create infowindow
     var infowindow = new google.maps.InfoWindow({
