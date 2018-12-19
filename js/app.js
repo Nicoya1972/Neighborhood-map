@@ -182,6 +182,7 @@ var ViewModel = function() {
         });
     }
 
+
     self.keywords = ko.observable();
 
     // match keywords with location names
@@ -205,8 +206,8 @@ var ViewModel = function() {
     };
 
 };
-
-var View = function() {
+    var google;
+    var View = function() {
       "use strict";
     var self = this;
     // Initialize Google Map
@@ -218,6 +219,8 @@ var View = function() {
     };
 
     var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+
 
     // Create infowindow
     var infowindow = new google.maps.InfoWindow({
