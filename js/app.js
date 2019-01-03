@@ -1,308 +1,242 @@
 var locations = [{
-    id: '0',
-    name: 'Moresi\'s Chop House',
-    latIngA: 37.941477,
-    latIngB: -121.934626,
-    address: '6115 Main St, Clayton, CA 94517',
-    description: 'Where is the Beef'
-}, {
-    id: '1',
-    name: 'La Veranda Cafe',
-    latIngA: 37.940694,
-    latIngB: -121.933255,
-    address: '6201 Center St, Clayton, CA 94517',
-    description: 'Italian Dining'
-}, {
-    id: '2',
-    name: 'Ed\'s Mudville Grill',
-    latIngA: 37.940305,
-    latIngB: -121.933186,
-    address: '6200 Center St, Clayton, CA 94517',
-    description: 'Beer anyone'
-}, {
-    id: '3',
-    name: 'Skipolini\'s Pizza',
-    latIngA: 37.941048,
-    latIngB: -121.936035,
-    address: '1035 Diablo St, Clayton, CA 94517',
-    description: 'When the Moon hits you eye like a big pice of Pie...... '
-}, {
-    id: '4',
-    name: 'Clayton Club Saloon',
-    latIngA: 37.941134,
-    latIngB: -121.934996,
-    address: '6096 Main St, Clayton, CA 94517',
-    description: "Jack Daniel\'s lives here"
-}, {
-    id: '5',
-    name: 'Johnny\'s International Deli and Cafe',
-    latIngA: 37.940710,
-    latIngB: -121.934705,
-    address: '6101 Center St, Clayton, CA 94517',
-    description: 'Sanwiched Time'
-}, {
-    id: '6',
-    name: 'Oakhust Country Club',
-    latIngA: 37.943967,
-    latIngB: -121.928021,
-    address: '1001 Peacock Creek Dr, Clayton, CA 94517',
-    description: 'Happy Gilmore'
-}, {
-    id: '7',
-    name: 'Library',
-    latIngA: 37.942550,
-    latIngB: -121.935326,
-    address: '6125 Clayton Rd, Clayton, CA 94517',
-    description: 'Shhhhh Learning taking Place'
-}, {
-    id: '8',
-    name: 'The Grove',
-    latIngA: 37.940757,
-    latIngB: -121.934017,
-    address: '6100 Main St, Clayton, CA 94517',
-    description: "It\'s a Groove thing"
-}, {
-    id: '9',
-    name: 'Clayton City Hall',
-    latIngA: 37.942415,
-    latIngB: -121.937268,
-    address: '6000 Heritage Trail, Clayton, CA 94517',
-    description: 'Where the Law lives'
+  
+    title: 'Moresi\'s Chop House',
+    location: {lat: 37.941477, lng: -121.934626} }, 
+
+    { 
+        title: 'La Veranda Cafe',
+    location: {lat: 37.940694,lng: -121.933255} },
+
+    { 
+        title: 'Ed\'s Mudville Grill',
+    location: {lat: 37.940305, lng: -121.933186} }, 
+
+    { 
+        title: 'Skipolini\'s Pizza',
+    location:{ lat: 37.941048,lng: -121.936035} }, 
+
+    { 
+        title: 'Clayton Club Saloon',
+    location:{ lat: 37.941134, lng: -121.934996} }, 
+
+    { 
+        title: 'Oakhust Country Club',
+    location: {lat: 37.943967, lng: -121.928021} },  
+
+    { 
+        title: 'The Grove',
+    location: {lat: 37.940757, lng: -121.934017}
 }];
 
-    
-var ViewModel = function() {
-    "use strict";
+   
+// declaring global variables
+var map;
+var infoWindow;
+var bounds;
+
+// google maps init
+function initMap() {
+     map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat:37.940837, lng: -121.934608},
+        zoom: 13,
+        mapTypeControl: false
+        
+    });
+  
+    infoWindow = new google.maps.InfoWindow();
+
+    bounds = new google.maps.LatLngBounds();
+   
+    ko.applyBindings(new ViewModel());
+}
+
+// handle map error
+function googleMapsError() {
+    alert('An error occurred with Google Maps!');
+}
+
+/* Location Model */ 
+var LocationMarker = function(data) {
     var self = this;
 
-    var view = new View();
+    this.title = data.title;
+    this.position = data.location;
+    this.street = '',
+    this.city = '',
+    this.phone = '';
 
-    // Initialize the array for list view. This array will contain the list of locations for rendering
-    self.locationList = ko.observableArray();
+    this.visible = ko.observable(true);
 
-    // Initialize locations on the map
-    self.initialize = function() {
-        self.renderLocations(locations);
-    };
+    // Style the markers a bit. This will be our listing marker icon.
+    var defaultIcon = makeMarkerIcon('0091ff');
+    // Create a "highlighted location" marker color for when the user
+    // mouses over the marker.
+    var highlightedIcon = makeMarkerIcon('FFFF24');
 
-    // Render locations, either all or filtered
-    self.renderLocations = function(activeLocations) {
-        // Clear all the lcoations in the locaiton list and clear all the markers on the map
-        self.locationList.removeAll();
-        view.clearMarkers();
+    var clientID = 'LSYIDWAVCIGBEVWPCL0AYXNTW3ZH1GUD1X4YMSKJ0FOH12TF';
+    var clientSecret = 'SZLFIMOHG03T4TDIJWJSBQXGXS502GKSWKBUPWORWRCG3Z4R';
 
-        var l = activeLocations.length;
-        for (var i = 0; i < l; i++) {
-            view.renderLocation(activeLocations[i]);
+    // get JSON request of foursquare data
+    var reqURL = 'https://api.foursquare.com/v2/venues/search?ll=' + this.position.lat + ',' + this.position.lng + '&client_id=' + clientID + '&client_secret=' + clientSecret + '&v=20160118' + '&query=' + this.title;
 
-            // Push the location into the list
-            self.locationList.push(activeLocations[i]);
-        }
-    };
-
-    // A function to piece together today's date. Used in getFourSquareData.
-    function getToday() {
-        var today = new Date();
-        var dd = today.getDate();
-        var mm = today.getMonth() + 1; //January is 0!
-        var yyyy = today.getFullYear();
-
-        if (dd < 10) {
-            dd = '0' + dd;
-        }
-
-        if (mm < 10) {
-            mm = '0' + mm;
-        }
-        today = yyyy + mm + dd;
-        return today;
-    }
-
-
-    // As the user clicks on a pin, show infowindow and request Foursqaure data
-    self.onLocationClick = function(location) {
-        getFoursquareData(location);
-        view.showInfoWindow(location);
-    };
-
-    // Get Foursqaure data. Search by venue's geo-location.
-    var foursquareKeyString = 'client_id=LSYIDWAVCIGBEVWPCL0AYXNTW3ZH1GUD1X4YMSKJ0FOH12TF&client_secret= SZLFIMOHG03T4TDIJWJSBQXGXS502GKSWKBUPWORWRCG3Z4R';
-
-    function getFoursquareData(location) {
-        // Request Foursqaure data
-        var url = "https://api.foursquare.com/v2/venues/search?limit=1&ll=" + location.latIngA.toFixed(2) + "," +
-            location.latIngB.toFixed(2) + "&query=" +
-            location.name + '&' + foursquareKeyString + "&v=20181120" + getToday();
-        $.ajax({
-            url: url,
-            context: document.body
-        }).done(function(data) {
-            if (data.response.venues[0]) {
-                // Get venue's url from Foursquare
-                $('#fs-link').attr('href', data.response.venues[0].url);
-                var venueId = data.response.venues[0].id;
-                getFoursquarePhotos(location, venueId);
-            } else {
-                // If Foursquare does not have a response, set the link to the current page.
-                $('#fs-link').attr('href', '#');
-            }
-        }).fail(function() {
-            // If the request fails, the link is set to the current page,
-            // and show a console.log info for the failed request.
-            $('#fs-link').attr('href', '#');
-            view.showAlert('Foursquare API is not available at the moment.');
-        });
-    }
-
-    // Get Foursquare Photo for info window
-    function getFoursquarePhotos(location, venueId) {
-        // Get venue's photo URL from Foursquare by venue Id.
-        var photoRequestUrl = 'https://api.foursquare.com/v2/venues/' + venueId + '/photos' +
-            '?limit=1&' + foursquareKeyString +
-            '&v=20181120' + getToday();
-        $.ajax({
-            url: photoRequestUrl,
-            context: document.body
-        }).done(function(data) {
-            if (data.response.photos.count == 1) {
-                var photoUrl =
-                    data.response.photos.items[0].prefix +
-                    "width200" +
-                    data.response.photos.items[0].suffix;
-                $('#fs-photo').attr('src', photoUrl);
-                view.resetInfoWindow(location);
-            } else {
-                // If there is no photo available from Foursquare, set the image to empty.
-                $('#fs-photo').attr('src', '');
-            }
-        }).fail(function() {
-            // If the request failed, set the image to empty, and show a console.log info for the failed request.
-            $('#fs-photo').attr('src', '');
-            view.showAlert('Foursquare API is not available at the moment.');
-        });
-    }
-
-
-    self.keywords = ko.observable();
-
-    // match keywords with location names
-    self.search = function() {
-        // Create an empty array to store filtered locations.
-        var filteredLocations = [];
-        // Split the keyword string by space
-        var keywords = self.keywords().toLowerCase().split(' ');
-        for (var j = 0; j < locations.length; j++) {
-            for (var i = 0; i < keywords.length; i++) {
-                // If any one of the keywords match with any of one of the words in locations' names,
-                // save the matched location in the filteredLocations array.
-                if (locations[j].name.toLowerCase().indexOf(keywords[i]) != -1) {
-                    filteredLocations.push(locations[j]);
-                    break;
-                }
-            }
-        }
-        // Render filtered locations
-        self.renderLocations(filteredLocations);
-    };
-
-};
-    var google;
-    var View = function() {
-      "use strict";
-    var self = this;
-    // Initialize Google Map
-    var myLatlng = new google.maps.LatLng(37.940837, -121.934608);
-    var mapOptions = {
-        zoom: 17,
-        center: myLatlng,
-        disableDefaultUI: true
-    };
-
-    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-
-
-
-    // Create infowindow
-    var infowindow = new google.maps.InfoWindow({
-        maxWidth: 320,
-        zIndex: 200
+    $.getJSON(reqURL).done(function(data) {
+        var results = data.response.venues[0];
+        self.street = results.location.formattedAddress[0] ? results.location.formattedAddress[0]: 'N/A';
+        self.city = results.location.formattedAddress[1] ? results.location.formattedAddress[1]: 'N/A';
+        self.phone = results.contact.formattedPhone ? results.contact.formattedPhone : 'N/A';
+    }).fail(function() {
+        alert('Something went wrong with foursquare');
     });
 
-    // Create an object to store markers
-    var markers = {};
+    // Create a marker per location, and put into markers array
+    this.marker = new google.maps.Marker({
+        position: this.position,
+        title: this.title,
+        animation: google.maps.Animation.DROP,
+        icon: defaultIcon
+    });    
 
-    // Render locations on the view: map and list
-    self.renderLocation = function(location) {
-        var currentLocation = location;
-        var id = currentLocation.id;
-        var name = currentLocation.name;
-        var description = currentLocation.description;
-        var address = currentLocation.address;
-        var markerLatLng = new google.maps.LatLng(currentLocation.latIngA, currentLocation.latIngB);
-
-        // Put marker on the map
-        var marker = new google.maps.Marker({
-            position: markerLatLng,
-            map: map,
-            title: name
-        });
-
-        // Add event listener to marker
-        google.maps.event.addListener(marker, 'click', (function(location) {
-            return function() {
-                viewModel.onLocationClick(location);
-            };
-        })(location));
-
-        markers[id] = marker;
-    };
-
-    // Show infowindow on the screen
-    self.showInfoWindow = function(location) {
-        $('.collapse').collapse('hide');
-        var marker = markers[location.id];
-        infowindow.setContent(getMarkerContent(location));
-        infowindow.open(map, marker);
-        // Move the center of the map to the clicked marker
-        // map.panTo(marker.position);
-    };
-
-    self.resetInfoWindow = function(location) {
-        var marker = markers[location.id];
-        infowindow.open(map, marker);
-    };
-
-    // Clear all the markers on the screen
-    self.clearMarkers = function() {
-        for (var id in markers) {
-            markers[id].setMap(null);
+    self.filterMarkers = ko.computed(function () {
+        // set marker and extend bounds (showListings)
+        if(self.visible() === true) {
+            self.marker.setMap(map);
+            bounds.extend(self.marker.position);
+            map.fitBounds(bounds);
+        } else {
+            self.marker.setMap(null);
         }
-        markers = {};
+    });
+    
+    // Create an onclick even to open an indowindow at each marker
+    this.marker.addListener('click', function() {
+        populateInfoWindow(this, self.street, self.city, self.phone, infoWindow);
+        toggleBounce(this);
+        map.panTo(this.getPosition());
+    });
+
+    // Two event listeners - one for mouseover, one for mouseout,
+    // to change the colors back and forth.
+    this.marker.addListener('mouseover', function() {
+        this.setIcon(highlightedIcon);
+    });
+    this.marker.addListener('mouseout', function() {
+        this.setIcon(defaultIcon);
+    });
+
+    // show item info when selected from list
+    this.show = function(location) {
+        google.maps.event.trigger(self.marker, 'click');
     };
 
-    self.showAlert = function(alert) {
-        $('#alert-box').text('Oops! ' + alert);
-        $('#alert-box').fadeIn().delay(3000).fadeOut();
+    // creates bounce effect when item selected
+    this.bounce = function(place) {
+        google.maps.event.trigger(self.marker, 'click');
     };
-
-    // Assemble marker content
-    function getMarkerContent(location) {
-        var markerContent = '<div class="content row">' +
-            '<div class="col-sm-6">' +
-            '<a id="fs-link" target="_blank">' +
-            '<h3 id="firstHeading" class="firstHeading">' + location.name + '</h3>' +
-            '</a>' +
-            '<div id="bodyContent">' +
-            '<p>' + location.description + '</p>' +
-            '<p>Address: ' + location.address + '</p>' +
-            '</div>' +
-            '</div><div class="col-sm-6"><img id="fs-photo"></img></div>' +
-            '</div>';
-        return markerContent;
-    }
 
 };
 
-var viewModel = new ViewModel();
-viewModel.initialize();
-ko.applyBindings(viewModel);
+/* View Model */
+var ViewModel = function() {
+    var self = this;
+
+    this.searchItem = ko.observable('');
+
+    this.mapList = ko.observableArray([]);
+
+    // add location markers for each location
+    locations.forEach(function(location) {
+        self.mapList.push( new LocationMarker(location) );
+    });
+
+    // locations viewed on map
+    this.locationList = ko.computed(function() {
+        var searchFilter = self.searchItem().toLowerCase();
+        if (searchFilter) {
+            return ko.utils.arrayFilter(self.mapList(), function(location) {
+                var str = location.title.toLowerCase();
+                var result = str.includes(searchFilter);
+                location.visible(result);
+                return result;
+            });
+        }
+        self.mapList().forEach(function(location) {
+            location.visible(true);
+        });
+        return self.mapList();
+    }, self);
+};
+
+// This function populates the infowindow when the marker is clicked. We'll only allow
+// one infowindow which will open at the marker that is clicked, and populate based
+// on that markers position.
+function populateInfoWindow(marker, street, city, phone, infowindow) {
+    // Check to make sure the infowindow is not already opened on this marker.
+    if (infowindow.marker != marker) {
+        // Clear the infowindow content to give the streetview time to load.
+        infowindow.setContent('');
+        infowindow.marker = marker;
+
+        // Make sure the marker property is cleared if the infowindow is closed.
+        infowindow.addListener('closeclick', function() {
+            infowindow.marker = null;
+        });
+        var streetViewService = new google.maps.StreetViewService();
+        var radius = 50;
+
+        var windowContent = '<h4>' + marker.title + '</h4>' + 
+            '<p>' + street + "<br>" + city + '<br>' + phone + "</p>";
+
+        // In case the status is OK, which means the pano was found, compute the
+        // position of the streetview image, then calculate the heading, then get a
+        // panorama from that and set the options
+        var getStreetView = function (data, status) {
+            if (status == google.maps.StreetViewStatus.OK) {
+                var nearStreetViewLocation = data.location.latLng;
+                var heading = google.maps.geometry.spherical.computeHeading(
+                    nearStreetViewLocation, marker.position);
+                infowindow.setContent(windowContent + '<div id="pano"></div>');
+                var panoramaOptions = {
+                    position: nearStreetViewLocation,
+                    pov: {
+                        heading: heading,
+                        pitch: 20
+                    }
+                };
+                var panorama = new google.maps.StreetViewPanorama(
+                    document.getElementById('pano'), panoramaOptions);
+            } else {
+                infowindow.setContent(windowContent + '<div style="color: red">No Street View Found</div>');
+            }
+        };
+        // Use streetview service to get the closest streetview image within
+        // 50 meters of the markers position
+        streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+        // Open the infowindow on the correct marker.
+        infowindow.open(map, marker);
+    }
+}
+
+function toggleBounce(marker) {
+  if (marker.getAnimation() !== null) {
+    marker.setAnimation(null);
+  } else {
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+    setTimeout(function() {
+        marker.setAnimation(null);
+    }, 1400);
+  }
+}
+
+// This function takes in a COLOR, and then creates a new marker
+// icon of that color. The icon will be 21 px wide by 34 high, have an origin
+// of 0, 0 and be anchored at 10, 34).
+function makeMarkerIcon(markerColor) {
+    var markerImage = new google.maps.MarkerImage(
+        'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
+        '|40|_|%E2%80%A2',
+        new google.maps.Size(21, 34),
+        new google.maps.Point(0, 0),
+        new google.maps.Point(10, 34),
+        new google.maps.Size(21, 34));
+    return markerImage;
+}
