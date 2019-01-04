@@ -37,8 +37,8 @@ var bounds;
 // google maps init
 function initMap() {
      map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat:37.940837, lng: -121.934608},
-        zoom: 13,
+        center: {lat: 37.940837, lng: -121.934608},
+        zoom: 19,
         mapTypeControl: false
         
     });
@@ -227,16 +227,18 @@ function toggleBounce(marker) {
   }
 }
 
+
 // This function takes in a COLOR, and then creates a new marker
 // icon of that color. The icon will be 21 px wide by 34 high, have an origin
 // of 0, 0 and be anchored at 10, 34).
 function makeMarkerIcon(markerColor) {
-    var markerImage = new google.maps.MarkerImage(
-        'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
+    var image = {
+  url: 'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
         '|40|_|%E2%80%A2',
-        new google.maps.Size(21, 34),
-        new google.maps.Point(0, 0),
-        new google.maps.Point(10, 34),
-        new google.maps.Size(21, 34));
-    return markerImage;
+  size: new google.maps.Size(71, 71),
+  origin: new google.maps.Point(0, 0),
+  anchor: new google.maps.Point(17, 34),
+  scaledSize: new google.maps.Size(25, 25)
+};
+    
 }
