@@ -3,9 +3,11 @@ body {
 }
 
 .navbar {
+    width: 309px;   
     border-radius: 0px;
     margin-bottom: 0;
     opacity: 0.8    ;
+    margin-left: 18px;
 }
 
 .nav-title {
@@ -26,7 +28,7 @@ body {
 
 .sidenav {
     margin: 0;
-    position: absolute;
+    position: absolute; 
     left: 0px;
     top: 0px;
     bottom: 0px;

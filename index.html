@@ -17,12 +17,10 @@
   <body>
 
     <nav class="navbar navbar-inverse">
-      <div class="container-fluid">
+      <div class="container">
         <div class="navbar-header">
-          <div class="navbar-brand">
-            <span class="nav-title">Clayton Map</span>
+          <a class="navbar-brand" href="#">Clayton Map</a>
           </div>
-        </div>
 
         <form class="navbar-form navbar-right" role="search">
           <div class="input-group">
@@ -34,25 +32,26 @@
         </form>
       </div>
     </nav>
-
     <main class="container-fluid">
-      <div class="row">
+      
         <div id="map"></div>
-
-        <aside class="col-md-3 col-md-offset-9 collapsed in" id="navbarSupportedContent">
+  
+        <aside class="col-md-3" id="navbarSupportedContent">
+  
           <div class="sidenav">
             <div class="list-group" data-bind="foreach: locationList">
                 <a href="#" class="list-group-item list-group-item-action" data-bind="text: title, click: show"></a>
             </div>
           </div>
-        </aside>
+       </aside>
       </div>
     </main>
+    
 
       <!-- Latest compiled and minified JavaScript -->
       
       <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script> 
       <script src="js/apps.js"></script>
-      <script  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7DHxys0E9iAkhrhExYf37FXKPmKqoV8U&callback=initMap" onerror="googleMapsError()"></script>
+      <script  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7DHxys0E9iAkhrhExYf37FXKPmKqoV8U&callback=initMap" onerror="googleMapsError()"  async defer></script>
    </body>
 </html>
